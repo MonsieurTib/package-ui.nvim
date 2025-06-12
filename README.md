@@ -15,6 +15,15 @@ A modern, intuitive package manager UI for Neovim that provides a unified interf
 
 ## 📸 Interface Overview
 
+## Npm 
+
+<img width="1397" alt="NPM" src="https://github.com/user-attachments/assets/ea992761-0771-46e4-8850-da31ef37b41a" />
+
+## Cargo 
+
+<img width="1407" alt="Cargo" src="https://github.com/user-attachments/assets/128ace23-cf9c-4836-b9ba-2b1e51f16fba" />
+
+
 
 
 The UI consists of five main components:
@@ -107,7 +116,7 @@ vim.keymap.set("n", "<leader>pu", "<cmd>PackageUI<cr>", { desc = "Open Package U
 require("package-ui").setup({
   -- Configuration options will be added here as the plugin evolves
 })
-
+```
 
 ## 🛠️ Supported Package Managers
 
