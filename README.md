@@ -21,7 +21,7 @@ A modern, intuitive package manager UI for Neovim that provides a unified interf
 
 ## Cargo 
 
-<img width="1407" alt="Cargo" src="https://github.com/user-attachments/assets/128ace23-cf9c-4836-b9ba-2b1e51f16fba" />
+<img width="1599" alt="Cargo" src="https://github.com/user-attachments/assets/889bf362-94ee-4972-af70-3b3bf52ac775" />
 
 
 
