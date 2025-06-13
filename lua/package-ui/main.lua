@@ -8,6 +8,7 @@ local package_details_component = require("package-ui.ui.package_details_compone
 local search_component = require("package-ui.ui.search_component")
 local npm_service = require("package-ui.services.npm_service")
 local cargo_service = require("package-ui.services.cargo_service")
+local gem_service = require("package-ui.services.gem_service")
 
 local current_package_manager = nil
 local installed_packages_cache = {}
@@ -17,6 +18,7 @@ local current_details_request = nil
 local package_manager_services = {
   npm = npm_service,
   cargo = cargo_service,
+  gem = gem_service,
 }
 
 local function detect_package_manager()
@@ -26,6 +28,8 @@ local function detect_package_manager()
     return "npm"
   elseif vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
     return "cargo"
+  elseif vim.fn.filereadable(cwd .. "/Gemfile") == 1 then
+    return "gem"
   end
 
   return nil
