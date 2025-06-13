@@ -23,8 +23,9 @@ A modern, intuitive package manager UI for Neovim that provides a unified interf
 
 <img width="1599" alt="Cargo" src="https://github.com/user-attachments/assets/889bf362-94ee-4972-af70-3b3bf52ac775" />
 
+## Gem
 
-
+<img width="1689" alt="Gem" src="https://github.com/user-attachments/assets/1459d782-0c71-40bb-8538-80a04714f9b1" />
 
 The UI consists of five main components:
 - **Search**: Find packages across registries
@@ -131,6 +132,12 @@ require("package-ui").setup({
 - Manages dependencies and dev-dependencies
 - Integrates with crates.io registry
 - Supports semantic versioning
+
+### Gem (Ruby)
+- Automatically detects `Gemfile` files
+- Manages gem dependencies from Gemfile and Gemfile.lock
+- Integrates with rubygems.org registry
+- Supports semantic versioning and version constraints
 
 ## 🤝 Contributing
 
