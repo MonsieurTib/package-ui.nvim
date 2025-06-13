@@ -2,6 +2,17 @@ local M = {}
 
 local CRATES_IO_API_BASE = "https://crates.io/api/v1"
 
+-- Helper function to format ISO date to YYYY-MM-DD
+local function format_date(iso_date)
+  if not iso_date or iso_date == "" then
+    return ""
+  end
+
+  -- Extract date part from ISO format "2025-06-06T21:15:19.573518"
+  local date_part = iso_date:match("^(%d%d%d%d%-%d%d%-%d%d)")
+  return date_part or iso_date
+end
+
 local get_packages_with_latest_versions_async
 local get_package_latest_version_async
 
@@ -174,6 +185,62 @@ function M.search_packages_async(query, callback)
   })
 end
 
+local function get_dependencies_async(package_name, package_version, callback)
+  local dependencies_url =
+      string.format("%s/crates/%s/%s/dependencies", CRATES_IO_API_BASE, package_name, package_version)
+
+  local cmd = { "curl", "-s", dependencies_url }
+  local output = {}
+
+  vim.fn.jobstart(cmd, {
+    stdout_buffered = true,
+    stderr_buffered = true,
+    on_stdout = function(_, data)
+      if data then
+        for _, line in ipairs(data) do
+          if line ~= "" then
+            table.insert(output, line)
+          end
+        end
+      end
+    end,
+    on_exit = function(_, exit_code)
+      vim.schedule(function()
+        local dependencies = {
+          normal = {},
+          dev = {},
+          build = {},
+        }
+
+        if exit_code == 0 then
+          local result = table.concat(output, "\n")
+          local success, json_data = pcall(vim.fn.json_decode, result)
+
+          if success and json_data and json_data.dependencies then
+            for _, dep in ipairs(json_data.dependencies) do
+              local dep_info = {
+                name = dep.crate_id,
+                version = dep.req,
+                optional = dep.optional or false,
+              }
+
+              if dep.kind == "normal" then
+                table.insert(dependencies.normal, dep_info)
+              elseif dep.kind == "dev" then
+                table.insert(dependencies.dev, dep_info)
+              elseif dep.kind == "build" then
+                table.insert(dependencies.build, dep_info)
+              end
+            end
+          end
+        end
+
+        callback(dependencies)
+      end)
+    end,
+  })
+end
+
 function M.get_package_details_async(package_name, callback, version)
   local details_url = string.format("%s/crates/%s", CRATES_IO_API_BASE, package_name)
 
@@ -202,6 +269,9 @@ function M.get_package_details_async(package_name, callback, version)
           license = "",
           repository = "",
           dependencies = {},
+          downloads = 0,
+          keywords = {},
+          updated_at = "",
         }
 
         if exit_code == 0 then
@@ -212,6 +282,9 @@ function M.get_package_details_async(package_name, callback, version)
             local crate = json_data.crate
             raw_details.description = (crate.description and tostring(crate.description)) or package_name
             raw_details.repository = (crate.repository and tostring(crate.repository)) or ""
+            raw_details.downloads = (crate.downloads and tonumber(crate.downloads)) or 0
+            raw_details.keywords = (crate.keywords and type(crate.keywords) == "table") and crate.keywords
+                or {}
 
             if version and json_data.versions then
               for _, version_info in ipairs(json_data.versions) do
@@ -224,14 +297,7 @@ function M.get_package_details_async(package_name, callback, version)
                       or ""
                   raw_details.license = (version_info.license and tostring(version_info.license))
                       or ""
-
-                  if version_info.dependencies then
-                    for _, dep in ipairs(version_info.dependencies) do
-                      if dep.kind == "normal" then -- Only normal dependencies, not dev/build
-                        raw_details.dependencies[dep.crate_id] = dep.req
-                      end
-                    end
-                  end
+                  raw_details.updated_at = format_date(version_info.updated_at)
                   break
                 end
               end
@@ -246,32 +312,68 @@ function M.get_package_details_async(package_name, callback, version)
                     or ""
                 raw_details.license = (latest_version.license and tostring(latest_version.license))
                     or ""
-
-                if latest_version.dependencies then
-                  for _, dep in ipairs(latest_version.dependencies) do
-                    if dep.kind == "normal" then
-                      raw_details.dependencies[dep.crate_id] = dep.req
-                    end
-                  end
-                end
+                raw_details.updated_at = format_date(latest_version.updated_at)
               end
             end
           end
         end
 
-        local package_info = {
-          fields = {
-            { type = "simple",       label = "Name",         value = raw_details.name },
-            { type = "simple",       label = "Version",      value = raw_details.version },
-            { type = "multiline",    label = "Description",  value = raw_details.description },
-            { type = "simple",       label = "Author",       value = raw_details.author },
-            { type = "simple",       label = "License",      value = raw_details.license },
-            { type = "simple",       label = "Repository",   value = raw_details.repository },
-            { type = "dependencies", label = "Dependencies", value = raw_details.dependencies },
-          },
-        }
+        get_dependencies_async(package_name, raw_details.version, function(dependencies)
+          raw_details.dependencies = dependencies
 
-        callback(package_info)
+          local fields = {
+            { type = "simple",    label = "Name",        value = raw_details.name },
+            { type = "simple",    label = "Version",     value = raw_details.version },
+            { type = "multiline", label = "Description", value = raw_details.description },
+            { type = "simple",    label = "Author",      value = raw_details.author },
+            { type = "simple",    label = "License",     value = raw_details.license },
+            { type = "simple",    label = "Repository",  value = raw_details.repository },
+            { type = "simple",    label = "Downloads",   value = tostring(raw_details.downloads) },
+            {
+              type = "simple",
+              label = "Keywords",
+              value = table.concat(raw_details.keywords, ", "),
+            },
+            { type = "simple", label = "Updated At", value = raw_details.updated_at },
+          }
+
+          if #dependencies.normal > 0 then
+            local normal_deps = {}
+            for _, dep in ipairs(dependencies.normal) do
+              local dep_str = dep.name .. " " .. dep.version
+              if dep.optional then
+                dep_str = dep_str .. " (optional)"
+              end
+              normal_deps[dep.name] = dep.version
+            end
+            table.insert(fields, { type = "dependencies", label = "Dependencies", value = normal_deps })
+          end
+
+          if #dependencies.dev > 0 then
+            local dev_deps = {}
+            for _, dep in ipairs(dependencies.dev) do
+              dev_deps[dep.name] = dep.version
+            end
+            table.insert(fields, { type = "dependencies", label = "Dev Dependencies", value = dev_deps })
+          end
+
+          if #dependencies.build > 0 then
+            local build_deps = {}
+            for _, dep in ipairs(dependencies.build) do
+              build_deps[dep.name] = dep.version
+            end
+            table.insert(
+              fields,
+              { type = "dependencies", label = "Build Dependencies", value = build_deps }
+            )
+          end
+
+          local package_info = {
+            fields = fields,
+          }
+
+          callback(package_info)
+        end)
       end)
     end,
   })
