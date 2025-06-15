@@ -347,6 +347,11 @@ function M.close_all_windows()
 end
 
 function M.setup()
+  if #windows ~= 0 then
+    M.close_all_windows()
+    return
+  end
+
   windows = {}
 
   setup_event_listeners()
