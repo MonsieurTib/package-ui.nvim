@@ -15,17 +15,21 @@ A modern, intuitive package manager UI for Neovim that provides a unified interf
 
 ## 📸 Interface Overview
 
-## Npm 
+## Npm (Javascript)
 
 <img width="1397" alt="NPM" src="https://github.com/user-attachments/assets/ea992761-0771-46e4-8850-da31ef37b41a" />
 
-## Cargo 
+## Cargo (Rust)
 
 <img width="1599" alt="Cargo" src="https://github.com/user-attachments/assets/889bf362-94ee-4972-af70-3b3bf52ac775" />
 
-## Gem
+## Gem 
 
 <img width="1689" alt="Gem" src="https://github.com/user-attachments/assets/1459d782-0c71-40bb-8538-80a04714f9b1" />
+
+## Mix (Elixir) 
+
+<img width="1879" alt="Elixir" src="https://github.com/user-attachments/assets/c9910e4d-e0cc-4fbd-958f-46c878040a1e" />
 
 The UI consists of five main components:
 - **Search**: Find packages across registries
