@@ -9,6 +9,7 @@ local search_component = require("package-ui.ui.search_component")
 local npm_service = require("package-ui.services.npm_service")
 local cargo_service = require("package-ui.services.cargo_service")
 local gem_service = require("package-ui.services.gem_service")
+local mix_service = require("package-ui.services.mix_service")
 
 local current_package_manager = nil
 local installed_packages_cache = {}
@@ -19,6 +20,7 @@ local package_manager_services = {
   npm = npm_service,
   cargo = cargo_service,
   gem = gem_service,
+  mix = mix_service,
 }
 
 local function detect_package_manager()
@@ -30,6 +32,8 @@ local function detect_package_manager()
     return "cargo"
   elseif vim.fn.filereadable(cwd .. "/Gemfile") == 1 then
     return "gem"
+  elseif vim.fn.filereadable(cwd .. "/mix.exs") == 1 then
+    return "mix"
   end
 
   return nil
@@ -239,6 +243,8 @@ local function populate_installed_packages(callback)
       "Supported package managers:",
       "• npm (package.json)",
       "• Cargo (Cargo.toml)",
+      "• Gem (Gemfile)",
+      "• Elixir (mix.exs)",
       "• Go modules (go.mod) - coming soon",
       "• Maven (pom.xml) - coming soon",
     }
@@ -317,14 +323,25 @@ local function uninstall_package(package_name)
     if success then
       populate_installed_packages()
     else
-      installed_package_component.updateContent({
-        string.format("Failed to uninstall %s", package_name),
-        message or "Unknown error occurred",
-      })
+      local error_lines = { string.format("Failed to uninstall %s", package_name), "" }
+      
+      -- Split multi-line error messages
+      if message then
+        local lines = vim.split(message, "\n")
+        for _, line in ipairs(lines) do
+          if line ~= "" then
+            table.insert(error_lines, line)
+          end
+        end
+      else
+        table.insert(error_lines, "Unknown error occurred")
+      end
+      
+      installed_package_component.updateContent(error_lines)
 
       vim.defer_fn(function()
         populate_installed_packages()
-      end, 2000)
+      end, 5000)
     end
   end)
 end
@@ -362,14 +379,25 @@ local function install_package(package_name, version)
         installed_package_component.selectPackage(package_name)
       end)
     else
-      installed_package_component.updateContent({
-        string.format("Failed to install %s", package_spec),
-        message or "Unknown error occurred",
-      })
+      local error_lines = { string.format("Failed to install %s", package_spec), "" }
+      
+      -- Split multi-line error messages
+      if message then
+        local lines = vim.split(message, "\n")
+        for _, line in ipairs(lines) do
+          if line ~= "" then
+            table.insert(error_lines, line)
+          end
+        end
+      else
+        table.insert(error_lines, "Unknown error occurred")
+      end
+      
+      installed_package_component.updateContent(error_lines)
 
       vim.defer_fn(function()
         populate_installed_packages()
-      end, 2000)
+      end, 5000) -- Increased timeout to give more time to read detailed error
     end
   end)
 end
