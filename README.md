@@ -2,9 +2,13 @@
 
 A modern, intuitive package manager UI for Neovim that provides a unified interface for managing dependencies across different ecosystems.
 
+Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), and Mix (Elixir) through an elegant multi-panel interface with real-time search and version management.
+
+Manage all your project dependencies directly within Neovim. Browse installed packages, discover new ones, and handle version management without switching contexts.
+
 ## ✨ Features
 
-- 🚀 **Multi-ecosystem support**: Currently supports NPM and Cargo (Rust) package managers
+- 🚀 **Multi-ecosystem support**: Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), and Mix (Elixir) package managers
 - 🔍 **Real-time search**: Search packages across registries with instant results
 - 📦 **Package management**: Install, uninstall, and update packages with ease
 - 📊 **Detailed information**: View comprehensive package details, versions, and dependencies
@@ -23,7 +27,7 @@ A modern, intuitive package manager UI for Neovim that provides a unified interf
 
 <img width="1599" alt="Cargo" src="https://github.com/user-attachments/assets/889bf362-94ee-4972-af70-3b3bf52ac775" />
 
-## Gem 
+## RubyGems (Ruby)
 
 <img width="1689" alt="Gem" src="https://github.com/user-attachments/assets/1459d782-0c71-40bb-8538-80a04714f9b1" />
 
@@ -85,7 +89,6 @@ require("package-ui").setup()
 ### Opening the UI
 
 ```vim
--- Open package UI
 :PackageUI
 ```
 
@@ -142,6 +145,13 @@ require("package-ui").setup({
 - Manages gem dependencies from Gemfile and Gemfile.lock
 - Integrates with rubygems.org registry
 - Supports semantic versioning and version constraints
+
+### Mix (Elixir)
+- Automatically detects `mix.exs` files
+- Manages dependencies from mix.exs configuration
+- Integrates with hex.pm registry
+- Supports semantic versioning and version constraints
+- Handles both runtime and development dependencies
 
 ## 🤝 Contributing
 
