@@ -13,7 +13,7 @@ local function format_package_details(raw_details)
 
   local function clean_string(str)
     if not str or type(str) ~= "string" then
-      return str
+      return ""
     end
     return str:gsub("[\r\n]+", " "):gsub("^%s+", ""):gsub("%s+$", "")
   end
@@ -104,10 +104,13 @@ local function format_package_details(raw_details)
     for dep_name, dep_info in pairs(raw_details.requirements) do
       local clean_name = clean_string(dep_name)
       local clean_requirement = clean_string(dep_info.requirement or "any")
-      if dep_info.optional then
-        optional_deps[clean_name] = clean_requirement
-      else
-        deps[clean_name] = clean_requirement
+
+      if clean_name ~= "" and clean_requirement ~= "" then
+        if dep_info.optional then
+          optional_deps[clean_name] = clean_requirement
+        else
+          deps[clean_name] = clean_requirement
+        end
       end
     end
 
