@@ -2,7 +2,7 @@
 
 A modern, intuitive package manager UI for Neovim that provides a unified interface for managing dependencies across different ecosystems.
 
-Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), and Mix (Elixir) through an elegant multi-panel interface with real-time search and version management.
+Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), Mix (Elixir) and Pip (Python) through an elegant multi-panel interface with real-time search and version management.
 
 Manage all your project dependencies directly within Neovim. Browse installed packages, discover new ones, and handle version management without switching contexts.
 
@@ -34,6 +34,11 @@ Manage all your project dependencies directly within Neovim. Browse installed pa
 ## Mix (Elixir) 
 
 <img width="1879" alt="Elixir" src="https://github.com/user-attachments/assets/c9910e4d-e0cc-4fbd-958f-46c878040a1e" />
+
+## Pip (Python)
+
+<img width="1420" alt="python" src="https://github.com/user-attachments/assets/e3b319aa-4249-4bec-9f75-cc6142d21662" />
+
 
 The UI consists of five main components:
 - **Search**: Find packages across registries

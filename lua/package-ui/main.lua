@@ -10,6 +10,7 @@ local npm_service = require("package-ui.services.npm_service")
 local cargo_service = require("package-ui.services.cargo_service")
 local gem_service = require("package-ui.services.gem_service")
 local mix_service = require("package-ui.services.mix_service")
+local python_service = require("package-ui.services.python")
 
 local current_package_manager = nil
 local installed_packages_cache = {}
@@ -34,16 +35,28 @@ local function detect_package_manager()
     return "gem"
   elseif vim.fn.filereadable(cwd .. "/mix.exs") == 1 then
     return "mix"
+  elseif vim.fn.filereadable(cwd .. "/pyproject.toml") == 1 then
+    return "poetry"
+  elseif vim.fn.filereadable(cwd .. "/Pipfile") == 1 then
+    return "pipenv"
+  elseif vim.fn.filereadable(cwd .. "/requirements.txt") == 1 then
+    return "pip"
   end
 
   return nil
 end
 
 local function get_package_service()
-  if current_package_manager then
-    return package_manager_services[current_package_manager]
+  if not current_package_manager then
+    return nil
   end
-  return nil
+  
+  -- Handle Python package managers specially
+  if current_package_manager == "poetry" or current_package_manager == "pipenv" or current_package_manager == "pip" then
+    return python_service.get_service()
+  end
+  
+  return package_manager_services[current_package_manager]
 end
 
 local function filter_installed_packages(search_term)
@@ -88,8 +101,9 @@ end
 
 local function search_package_registry(search_term)
   if not search_term or search_term == "" then
+    local search_text = "Type to search available packages..."
     available_package_component.updateContent({
-      string.format("Type to search %s packages...", current_package_manager or ""),
+      search_text,
     })
     return
   end
@@ -245,6 +259,9 @@ local function populate_installed_packages(callback)
       "• Cargo (Cargo.toml)",
       "• Gem (Gemfile)",
       "• Elixir (mix.exs)",
+      "• Poetry (pyproject.toml)",
+      "• Pipenv (Pipfile)",
+      "• pip (requirements.txt)",
       "• Go modules (go.mod) - coming soon",
       "• Maven (pom.xml) - coming soon",
     }
@@ -292,7 +309,7 @@ local function populate_installed_packages(callback)
     installed_package_component.updateContent(lines)
 
     available_package_component.updateContent({
-      string.format("Type to search %s packages...", current_package_manager),
+      "Type to search available packages...",
     })
 
     versions_component.updateContent({ "Select a package to view versions" })
