@@ -10,6 +10,7 @@ local npm_service = require("package-ui.services.npm_service")
 local cargo_service = require("package-ui.services.cargo_service")
 local gem_service = require("package-ui.services.gem_service")
 local mix_service = require("package-ui.services.mix_service")
+local go_service = require("package-ui.services.go_service")
 local python_service = require("package-ui.services.python")
 
 local current_package_manager = nil
@@ -22,6 +23,7 @@ local package_manager_services = {
   cargo = cargo_service,
   gem = gem_service,
   mix = mix_service,
+  go = go_service,
 }
 
 local function detect_package_manager()
@@ -35,6 +37,8 @@ local function detect_package_manager()
     return "gem"
   elseif vim.fn.filereadable(cwd .. "/mix.exs") == 1 then
     return "mix"
+  elseif vim.fn.filereadable(cwd .. "/go.mod") == 1 then
+    return "go"
   elseif vim.fn.filereadable(cwd .. "/pyproject.toml") == 1 then
     return "poetry"
   elseif vim.fn.filereadable(cwd .. "/Pipfile") == 1 then
