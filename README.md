@@ -2,13 +2,13 @@
 
 A modern, intuitive package manager UI for Neovim that provides a unified interface for managing dependencies across different ecosystems.
 
-Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), Mix (Elixir) and Pip (Python) through an elegant multi-panel interface with real-time search and version management.
+Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), Mix (Elixir), Composer (PHP), Go modules, and Python package managers (pip, Poetry, Pipenv) through an elegant multi-panel interface with real-time search and version management.
 
 Manage all your project dependencies directly within Neovim. Browse installed packages, discover new ones, and handle version management without switching contexts.
 
 ## ✨ Features
 
-- 🚀 **Multi-ecosystem support**: Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), and Mix (Elixir) package managers
+- 🚀 **Multi-ecosystem support**: Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), Mix (Elixir), Composer (PHP), Go modules, and Python package managers (pip, Poetry, Pipenv)
 - 🔍 **Real-time search**: Search packages across registries with instant results
 - 📦 **Package management**: Install, uninstall, and update packages with ease
 - 📊 **Detailed information**: View comprehensive package details, versions, and dependencies
@@ -53,6 +53,9 @@ The UI consists of five main components:
 - `curl` (for API requests)
 - **For NPM projects**: `npm` command available in PATH
 - **For Cargo projects**: `cargo` command available in PATH
+- **For PHP projects**: `composer` command available in PATH
+- **For Go projects**: `go` command available in PATH
+- **For Python projects**: `pip`, `poetry`, or `pipenv` commands available in PATH
 
 ## 📦 Installation
 
@@ -157,6 +160,39 @@ require("package-ui").setup({
 - Integrates with hex.pm registry
 - Supports semantic versioning and version constraints
 - Handles both runtime and development dependencies
+
+### Composer (PHP)
+- Automatically detects `composer.json` files
+- Manages dependencies and dev-dependencies
+- Integrates with packagist.org registry
+- Supports semantic versioning and version constraints
+- Handles both require and require-dev dependencies
+
+### Go Modules
+- Automatically detects `go.mod` files
+- Manages Go module dependencies
+- Integrates with pkg.go.dev and module proxy
+- Supports semantic versioning and version constraints
+- Handles direct and indirect dependencies
+
+### Python Package Managers
+#### Pip
+- Automatically detects `requirements.txt` files
+- Manages Python packages from PyPI
+- Supports version specifications and constraints
+- Handles both runtime and development dependencies
+
+#### Poetry
+- Automatically detects `pyproject.toml` files with Poetry configuration
+- Manages dependencies through Poetry's dependency resolver
+- Integrates with PyPI registry
+- Supports dependency groups and development dependencies
+
+#### Pipenv
+- Automatically detects `Pipfile` files
+- Manages dependencies through Pipenv's virtual environment system
+- Integrates with PyPI registry
+- Supports both packages and dev-packages sections
 
 ## 🤝 Contributing
 
