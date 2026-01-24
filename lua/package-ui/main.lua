@@ -28,30 +28,29 @@ local package_manager_services = {
   composer = composer_service,
 }
 
-local function detect_package_manager()
+local function detect_package_managers()
   local cwd = vim.fn.getcwd()
+  local detected = {}
 
-  if vim.fn.filereadable(cwd .. "/package.json") == 1 then
-    return "npm"
-  elseif vim.fn.filereadable(cwd .. "/Cargo.toml") == 1 then
-    return "cargo"
-  elseif vim.fn.filereadable(cwd .. "/Gemfile") == 1 then
-    return "gem"
-  elseif vim.fn.filereadable(cwd .. "/mix.exs") == 1 then
-    return "mix"
-  elseif vim.fn.filereadable(cwd .. "/go.mod") == 1 then
-    return "go"
-  elseif vim.fn.filereadable(cwd .. "/composer.json") == 1 then
-    return "composer"
-  elseif vim.fn.filereadable(cwd .. "/pyproject.toml") == 1 then
-    return "poetry"
-  elseif vim.fn.filereadable(cwd .. "/Pipfile") == 1 then
-    return "pipenv"
-  elseif vim.fn.filereadable(cwd .. "/requirements.txt") == 1 then
-    return "pip"
+  local managers = {
+    { name = "npm", file = "package.json" },
+    { name = "cargo", file = "Cargo.toml" },
+    { name = "gem", file = "Gemfile" },
+    { name = "mix", file = "mix.exs" },
+    { name = "go", file = "go.mod" },
+    { name = "composer", file = "composer.json" },
+    { name = "poetry", file = "pyproject.toml" },
+    { name = "pipenv", file = "Pipfile" },
+    { name = "pip", file = "requirements.txt" },
+  }
+
+  for _, pm in ipairs(managers) do
+    if vim.fn.filereadable(cwd .. "/" .. pm.file) == 1 then
+      table.insert(detected, pm)
+    end
   end
 
-  return nil
+  return detected
 end
 
 local function get_package_service()
@@ -561,9 +560,7 @@ local function setup_package_actions_listeners()
   })
 end
 
-function M.setup()
-  current_package_manager = detect_package_manager()
-
+local function open_ui()
   setup_search_listener()
   setup_package_selection_listener()
   setup_version_selection_listener()
@@ -573,6 +570,34 @@ function M.setup()
   if current_package_manager then
     populate_installed_packages()
   end
+end
+
+function M.setup()
+  local detected = detect_package_managers()
+
+  if #detected == 0 then
+    vim.notify("No package manager detected in current directory", vim.log.levels.WARN)
+    return
+  end
+
+  if #detected == 1 then
+    current_package_manager = detected[1].name
+    open_ui()
+    return
+  end
+
+  -- Multiple managers detected: prompt user to select
+  vim.ui.select(detected, {
+    prompt = "Select package manager:",
+    format_item = function(item)
+      return item.name
+    end,
+  }, function(choice)
+    if choice then
+      current_package_manager = choice.name
+      open_ui()
+    end
+  end)
 end
 
 function M.get_current_package_manager()
