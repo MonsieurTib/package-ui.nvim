@@ -6,18 +6,19 @@ Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), Mix (Elixir), Composer (P
 
 Manage all your project dependencies directly within Neovim. Browse installed packages, discover new ones, and handle version management without switching contexts.
 
-## ✨ Features
+## Features
 
-- 🚀 **Multi-ecosystem support**: Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), Mix (Elixir), Composer (PHP), Go modules, and Python package managers (pip, Poetry, Pipenv)
-- 🔍 **Real-time search**: Search packages across registries with instant results
-- 📦 **Package management**: Install, uninstall, and update packages with ease
-- 📊 **Detailed information**: View comprehensive package details, versions, and dependencies
-- ⌨️ **Keyboard-driven**: Full keyboard navigation with intuitive shortcuts
-- 🎨 **Beautiful UI**: Clean, modern floating window interface
-- 🔄 **Update notifications**: See which installed packages have available updates
-- 📋 **Version management**: Browse and install specific package versions
+- **Multi-ecosystem support**: Supports npm (Node.js), Cargo (Rust), RubyGems (Ruby), Mix (Elixir), Composer (PHP), Go modules, and Python package managers (pip, Poetry, Pipenv)
+- **Real-time search**: Search packages across registries with instant results
+- **Package management**: Install, uninstall, and update packages with ease
+- **Detailed information**: View comprehensive package details, versions, and dependencies
+- **Keyboard-driven**: Full keyboard navigation with intuitive shortcuts
+- **Beautiful UI**: Clean, modern floating window interface
+- **Update notifications**: See which installed packages have available updates
+- **Version management**: Browse and install specific package versions
+- **Multiple package manager support**: Detect multiple package manager automatically  
 
-## 📸 Interface Overview
+## Interface Overview
 
 ## Npm (Javascript)
 
