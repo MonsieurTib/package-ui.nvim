@@ -7,6 +7,7 @@ local versions_component = require("package-ui.ui.versions_component")
 local package_details_component = require("package-ui.ui.package_details_component")
 local search_component = require("package-ui.ui.search_component")
 local npm_service = require("package-ui.services.npm_service")
+local bun_service = require("package-ui.services.bun_service")
 local cargo_service = require("package-ui.services.cargo_service")
 local gem_service = require("package-ui.services.gem_service")
 local mix_service = require("package-ui.services.mix_service")
@@ -21,6 +22,7 @@ local current_details_request = nil
 
 local package_manager_services = {
   npm = npm_service,
+  bun = bun_service,
   cargo = cargo_service,
   gem = gem_service,
   mix = mix_service,
@@ -33,6 +35,7 @@ local function detect_package_managers()
   local detected = {}
 
   local managers = {
+    { name = "bun", file = "bun.lock" },
     { name = "npm", file = "package.json" },
     { name = "cargo", file = "Cargo.toml" },
     { name = "gem", file = "Gemfile" },
